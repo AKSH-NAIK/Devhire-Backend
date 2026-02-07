@@ -1,10 +1,13 @@
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 exports.testUser = (req, res) => {
     res.json({
         message: "User controller is working"
     });
 };
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
+
 
 exports.registerUser = async (req, res) => {
     try {
@@ -40,6 +43,61 @@ exports.registerUser = async (req, res) => {
         // 5. Response (without password)
         res.status(201).json({
             message: "User registered successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+// ---- LOGIN USER ----
+exports.loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // 1. Validation
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "All fields required"
+            });
+        }
+
+        // 2. Check user
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid credentials"
+            });
+        }
+
+        // 3. Compare password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "Invalid credentials"
+            });
+        }
+
+        // 4. Create token
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        // 5. Response
+        res.json({
+            message: "Login successful",
+            token,
             user: {
                 id: user._id,
                 name: user.name,
