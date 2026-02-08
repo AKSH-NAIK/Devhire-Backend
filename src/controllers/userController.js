@@ -112,3 +112,8 @@ exports.loginUser = async (req, res) => {
         });
     }
 };
+exports.getMyProfile = async (req, res) => {
+    res.json({
+        user: req.user
+    });
+};
