@@ -23,3 +23,41 @@ exports.getJobs = async (req, res) => {
     const jobs = await Job.find();
     res.json({ jobs });
 };
+// Get single job
+exports.getJobById = async (req, res) => {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    res.json(job);
+};
+
+// Update job
+exports.updateJob = async (req, res) => {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    if (job.postedBy.toString() !== req.user.id) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const updated = await Job.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
+
+    res.json({ message: "Job updated", job: updated });
+};
+
+// Delete job
+exports.deleteJob = async (req, res) => {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    if (job.postedBy.toString() !== req.user.id) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
+    await job.deleteOne();
+    res.json({ message: "Job deleted" });
+};
