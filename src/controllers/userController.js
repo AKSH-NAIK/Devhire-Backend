@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
 exports.testUser = (req, res) => {
     res.json({
         message: "User controller is working"
@@ -117,3 +118,6 @@ exports.getMyProfile = async (req, res) => {
         user: req.user
     });
 };
+
+
+
