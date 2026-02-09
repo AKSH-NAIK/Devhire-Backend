@@ -17,6 +17,14 @@ router.post('/register', registerUser);
 // Login User
 router.post('/login', loginUser);
 
+// Helpful feedback for GET /login
+router.get('/login', (req, res) => {
+    res.status(405).json({
+        message: "To login, please send a POST request with email and password.",
+        hint: "Are you trying to access this via a browser? Login requires a POST request from a client like Postman or a frontend application."
+    });
+});
+
 // Get My Profile
 router.get('/me', auth, getMyProfile);
 
