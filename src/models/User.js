@@ -2,6 +2,16 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
     {
+        areasOfInterest: {
+  type: [String],
+  validate: {
+    validator: function (val) {
+      return val.length <= 3;
+    },
+    message: "You can select maximum 3 areas of interest"
+    }
+    },
+
         name: {
             type: String,
             required: true
@@ -18,6 +28,7 @@ const userSchema = new mongoose.Schema(
             required: true
         }
     },
+    
     { timestamps: true }
 );
 

@@ -2,20 +2,20 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
+// ---- TEST CONTROLLER ----
 exports.testUser = (req, res) => {
     res.json({
         message: "User controller is working"
     });
 };
 
-
+// ---- REGISTER USER ----
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role, areasOfInterest } = req.body;
 
         // 1. Validation
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !role) {
             return res.status(400).json({
                 message: "All fields required"
             });
@@ -23,7 +23,6 @@ exports.registerUser = async (req, res) => {
 
         // 2. Check if user already exists
         const existingUser = await User.findOne({ email });
-
         if (existingUser) {
             return res.status(400).json({
                 message: "Email already registered"
@@ -34,11 +33,13 @@ exports.registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 4. Save user in DB
+        // 4. Create user
         const user = await User.create({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role,
+            areasOfInterest: role === "candidate" ? areasOfInterest : []
         });
 
         // 5. Response (without password)
@@ -47,7 +48,9 @@ exports.registerUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role,
+                areasOfInterest: user.areasOfInterest
             }
         });
 
@@ -58,6 +61,7 @@ exports.registerUser = async (req, res) => {
         });
     }
 };
+
 // ---- LOGIN USER ----
 exports.loginUser = async (req, res) => {
     try {
@@ -70,9 +74,8 @@ exports.loginUser = async (req, res) => {
             });
         }
 
-        // 2. Check user
+        // 2. Check user exists
         const user = await User.findOne({ email });
-
         if (!user) {
             return res.status(400).json({
                 message: "Invalid credentials"
@@ -81,16 +84,15 @@ exports.loginUser = async (req, res) => {
 
         // 3. Compare password
         const isMatch = await bcrypt.compare(password, user.password);
-
         if (!isMatch) {
             return res.status(400).json({
                 message: "Invalid credentials"
             });
         }
 
-        // 4. Create token
+        // 4. Create token (include role for RBAC later)
         const token = jwt.sign(
-            { id: user._id },
+            { id: user._id, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
@@ -102,7 +104,9 @@ exports.loginUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role,
+                areasOfInterest: user.areasOfInterest
             }
         });
 
@@ -113,11 +117,10 @@ exports.loginUser = async (req, res) => {
         });
     }
 };
+
+// ---- GET MY PROFILE ----
 exports.getMyProfile = async (req, res) => {
     res.json({
         user: req.user
     });
 };
-
-
-
