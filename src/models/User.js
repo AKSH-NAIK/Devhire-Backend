@@ -26,7 +26,12 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true
-        }
+        },
+        companyWebsite: {
+             type: String,
+             default: null
+        },
+
     },
     
     { timestamps: true }

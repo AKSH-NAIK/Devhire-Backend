@@ -12,7 +12,7 @@ exports.testUser = (req, res) => {
 // ---- REGISTER USER ----
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, areasOfInterest } = req.body;
+        const { name, email, password, role, areasOfInterest, companyWebsite } = req.body;
 
         // 1. Validation
         if (!name || !email || !password || !role) {
@@ -34,13 +34,14 @@ exports.registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // 4. Create user
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            role,
-            areasOfInterest: role === "candidate" ? areasOfInterest : []
-        });
+      const user = await User.create({
+          name,
+         email,
+         password: hashedPassword,
+          role,
+          areasOfInterest: role === "candidate" ? areasOfInterest : [],
+          companyWebsite: role === "recruiter" ? companyWebsite || null : null
+});
 
         // 5. Response (without password)
         res.status(201).json({
@@ -50,7 +51,8 @@ exports.registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                areasOfInterest: user.areasOfInterest
+                areasOfInterest: user.areasOfInterest,
+                companyWebsite: user.companyWebsite
             }
         });
 
