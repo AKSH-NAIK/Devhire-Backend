@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const protect = require("../middleware/auth");
+const { authorizeRoles } = require("../middleware/roleMiddleware");
 
 const auth = require('../middleware/auth');
 const {
@@ -12,7 +14,8 @@ const {
 
 
 // CREATE JOB (protected)
-router.post('/', auth, createJob);
+router.post("/", protect, authorizeRoles("recruiter"), createJob);
+
 router.get('/', getJobs);
 router.get('/:id', getJobById);
 router.put('/:id', auth, updateJob);

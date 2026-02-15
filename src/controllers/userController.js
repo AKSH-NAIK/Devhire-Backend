@@ -12,17 +12,18 @@ exports.testUser = (req, res) => {
 // ---- REGISTER USER ----
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, areasOfInterest, companyWebsite } = req.body;
+        const { name, email, password, role, companyWebsite, areasOfInterest } = req.body;
 
         // 1. Validation
         if (!name || !email || !password || !role) {
             return res.status(400).json({
-                message: "All fields required"
+                message: "Name, email, password, and role are required"
             });
         }
 
-        // 2. Check if user already exists
+        // 2. Check existing user
         const existingUser = await User.findOne({ email });
+
         if (existingUser) {
             return res.status(400).json({
                 message: "Email already registered"
@@ -34,16 +35,16 @@ exports.registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // 4. Create user
-      const user = await User.create({
-          name,
-         email,
-         password: hashedPassword,
-          role,
-          areasOfInterest: role === "candidate" ? areasOfInterest : [],
-          companyWebsite: role === "recruiter" ? companyWebsite || null : null
-});
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+            companyWebsite: role === "recruiter" ? companyWebsite : "",
+            areasOfInterest: role === "candidate" ? areasOfInterest : []
+        });
 
-        // 5. Response (without password)
+        // 5. Response
         res.status(201).json({
             message: "User registered successfully",
             user: {
@@ -51,8 +52,8 @@ exports.registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                areasOfInterest: user.areasOfInterest,
-                companyWebsite: user.companyWebsite
+                companyWebsite: user.companyWebsite,
+                areasOfInterest: user.areasOfInterest
             }
         });
 

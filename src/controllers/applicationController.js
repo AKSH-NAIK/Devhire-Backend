@@ -2,23 +2,45 @@ const Application = require("../models/Application");
 
 // Apply to job
 exports.applyJob = async (req, res) => {
-    const { jobId } = req.body;
+    try {
+        const { jobId } = req.body;
 
-    const application = await Application.create({
-        job: jobId,
-        user: req.user.id
-    });
+        if (!jobId) {
+            return res.status(400).json({
+                message: "Job ID is required"
+            });
+        }
 
-    res.status(201).json({
-        message: "Applied successfully",
-        application
-    });
+        const application = await Application.create({
+            job: jobId,
+            user: req.user._id
+        });
+
+        res.status(201).json({
+            message: "Applied successfully",
+            application
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
 };
 
-// My applications
-exports.myApplications = async (req, res) => {
-    const apps = await Application.find({ user: req.user.id })
-        .populate("job");
+// Get my applications
+exports.getMyApplications = async (req, res) => {
+    try {
+        const apps = await Application.find({ user: req.user._id })
+            .populate("job");
 
-    res.json(apps);
+        res.json(apps);
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
 };

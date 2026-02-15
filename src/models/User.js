@@ -1,40 +1,35 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
-    {
-        areasOfInterest: {
-  type: [String],
-  validate: {
-    validator: function (val) {
-      return val.length <= 3;
+  {
+    name: {
+      type: String,
+      required: true
     },
-    message: "You can select maximum 3 areas of interest"
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    role: {
+      type: String,
+      enum: ["candidate", "recruiter"],
+      required: true
+    },
+    companyWebsite: {
+      type: String,
+      default: ""
+    },
+    areasOfInterest: {
+      type: [String],
+      default: []
     }
-    },
-
-        name: {
-            type: String,
-            required: true
-        },
-
-        email: {
-            type: String,
-            required: true,
-            unique: true
-        },
-
-        password: {
-            type: String,
-            required: true
-        },
-        companyWebsite: {
-             type: String,
-             default: null
-        },
-
-    },
-    
-    { timestamps: true }
+  },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
