@@ -1,6 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
+const { authorizeRoles } = require("../middleware/roleMiddleware"); 
+const upload = require("../config/multer");
+const { uploadResume } = require("../controllers/userController");
+
 const {
     testUser,
     registerUser,
@@ -24,6 +28,15 @@ router.get('/login', (req, res) => {
         hint: "Are you trying to access this via a browser? Login requires a POST request from a client like Postman or a frontend application."
     });
 });
+
+// Upload Resume
+router.put(
+  "/upload-resume",
+  auth,
+  authorizeRoles("candidate"),
+  upload.single("resume"),
+  uploadResume
+);
 
 // Get My Profile
 router.get('/me', auth, getMyProfile);

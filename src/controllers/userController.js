@@ -127,3 +127,29 @@ exports.getMyProfile = async (req, res) => {
         user: req.user
     });
 };
+// ---- UPLOAD RESUME ----
+exports.uploadResume = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                message: "No file uploaded"
+            });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        user.resume = req.file.path; // store file path
+        await user.save();
+
+        res.json({
+            message: "Resume uploaded successfully",
+            resume: user.resume
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};

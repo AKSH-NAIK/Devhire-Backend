@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema(
     areasOfInterest: {
       type: [String],
       default: []
-    }
+    },
+    resume: {
+  type: String,
+   },
+
   },
   { timestamps: true }
 );

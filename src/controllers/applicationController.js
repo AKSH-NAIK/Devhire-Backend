@@ -100,7 +100,10 @@ exports.getMyApplications = async (req, res) => {
         const apps = await Application.find({ user: req.user._id })
             .populate("job");
 
-        res.json(apps);
+        // 🔥 Filter out deleted jobs (job === null)
+        const validApps = apps.filter(app => app.job !== null);
+
+        res.json(validApps);
 
     } catch (error) {
         res.status(500).json({
