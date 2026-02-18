@@ -4,7 +4,7 @@ const Job = require("../models/Job");
 
 
 exports.applyJob = async (req, res) => {
-    console.log("APPLY CONTROLLER HIT");
+   
 
     try {
         const { jobId } = req.body;   
@@ -54,6 +54,39 @@ exports.applyJob = async (req, res) => {
     } catch (error) {
         console.error("ERROR:", error);
         return res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+
+// Get applications for a specific job (Recruiter only)
+exports.getApplicationsForJob = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return res.status(400).json({ message: "Invalid job ID" });
+        }
+
+        const job = await Job.findById(jobId);
+
+        if (!job) {
+            return res.status(404).json({ message: "Job not found" });
+        }
+
+        // Make sure recruiter owns this job
+        if (job.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
+        const applications = await Application.find({ job: jobId })
+            .populate("user", "name email");
+
+        res.json(applications);
+
+    } catch (error) {
+        res.status(500).json({
             message: "Server error",
             error: error.message
         });

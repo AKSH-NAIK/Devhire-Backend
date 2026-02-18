@@ -5,13 +5,15 @@ exports.createJob = async (req, res) => {
   try {
     const { title, description, location, salary } = req.body;
 
-    const job = await Job.create({
-      title,
-      description,
-      location,
-      salary,
-      company: req.user._id  
-    });
+   const job = await Job.create({
+  title,
+  description,
+  location,
+  company , 
+  salary,
+  createdBy: req.user._id
+});
+
 
     res.status(201).json({
       message: "Job created successfully",
