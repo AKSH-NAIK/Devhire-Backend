@@ -12,7 +12,7 @@ exports.testUser = (req, res) => {
 // ---- REGISTER USER ----
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, companyWebsite, areasOfInterest } = req.body;
+        const { name, email, password, role, companyWebsite, areaOfInterest } = req.body;
 
         // 1. Validation
         if (!name || !email || !password || !role) {
@@ -41,7 +41,7 @@ exports.registerUser = async (req, res) => {
             password: hashedPassword,
             role,
             companyWebsite: role === "recruiter" ? companyWebsite : "",
-            areasOfInterest: role === "candidate" ? areasOfInterest : []
+            areaOfInterest: role === "candidate" ? areaOfInterest : []
         });
 
         // 5. Response
@@ -53,7 +53,7 @@ exports.registerUser = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 companyWebsite: user.companyWebsite,
-                areasOfInterest: user.areasOfInterest
+                areaOfInterest: user.areaOfInterest
             }
         });
 
@@ -109,7 +109,7 @@ exports.loginUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                areasOfInterest: user.areasOfInterest
+                areaOfInterest: user.areaOfInterest
             }
         });
 

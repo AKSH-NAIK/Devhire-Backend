@@ -4,10 +4,8 @@ const Job = require("../models/Job");
 
 
 exports.applyJob = async (req, res) => {
-   
-
     try {
-        const { jobId } = req.body;   
+        const { jobId } = req.body;  
         console.log("jobId:", jobId);
 
         if (!jobId) {
@@ -41,9 +39,11 @@ exports.applyJob = async (req, res) => {
             });
         }
 
+       
         const application = await Application.create({
             job: jobId,
-            user: req.user._id
+            user: req.user._id,
+            resume: req.file ? req.file.path : null
         });
 
         return res.status(201).json({
