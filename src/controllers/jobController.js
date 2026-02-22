@@ -4,16 +4,18 @@ const Job = require('../models/Job');
 
 exports.createJob = async (req, res) => {
   try {
-    const { title, description, location, company, salary } = req.body;
+    const { title, description, location,  salary, type, requirements } = req.body;
 
-    const job = await Job.create({
-      title,
-      description,
-      location,
-      company,
-      salary,
-      createdBy: req.user._id
-    });
+   const job = await Job.create({
+  title,
+  description,
+  location,
+  salary,
+  type,
+  requirements,
+  company: req.user.name,  
+  createdBy: req.user._id
+});
 
     res.status(201).json({
       message: "Job created successfully",
@@ -34,8 +36,10 @@ exports.getJobById = async (req, res) => {
     try {
 
         const { id } = req.params;
-
-        // ✅ Check if valid ObjectId
+        console.log("Fetching jobs...");
+        const jobs = await Job.find({});
+        console.log("Jobs in DB:", jobs.length);
+        
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 message: "Invalid Job ID format"
@@ -66,7 +70,7 @@ exports.updateJob = async (req, res) => {
     const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
 
-    if (job.createdBy.toString() !== req.user.id) {
+    if (job.createdBy.toString() !== req.user._id.toString()){
         return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -84,7 +88,7 @@ exports.deleteJob = async (req, res) => {
     const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
 
-    if (job.createdBy.toString() !== req.user.id) {
+    if (job.createdBy.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: "Not authorized" });
     }
 
