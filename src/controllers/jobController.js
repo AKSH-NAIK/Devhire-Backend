@@ -3,31 +3,31 @@ const Job = require('../models/Job');
 
 
 exports.createJob = async (req, res) => {
-  try {
-    const { title, description, location,  salary, type, requirements } = req.body;
+    try {
+        const { title, description, location, salary, type, requirements } = req.body;
 
-   const job = await Job.create({
-  title,
-  description,
-  location,
-  salary,
-  type,
-  requirements,
-  company: req.user.name,  
-  createdBy: req.user._id
-});
+        const job = await Job.create({
+            title,
+            description,
+            location,
+            salary,
+            type,
+            requirements,
+            company: req.user.companyName || req.user.name,
+            createdBy: req.user._id
+        });
 
-    res.status(201).json({
-      message: "Job created successfully",
-      job
-    });
+        res.status(201).json({
+            message: "Job created successfully",
+            job
+        });
 
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message
-    });
-  }
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
 };
 
 
@@ -39,7 +39,7 @@ exports.getJobById = async (req, res) => {
         console.log("Fetching jobs...");
         const jobs = await Job.find({});
         console.log("Jobs in DB:", jobs.length);
-        
+
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 message: "Invalid Job ID format"
@@ -70,7 +70,7 @@ exports.updateJob = async (req, res) => {
     const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
 
-    if (job.createdBy.toString() !== req.user._id.toString()){
+    if (job.createdBy.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: "Not authorized" });
     }
 

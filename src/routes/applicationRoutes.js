@@ -9,7 +9,8 @@ const { authorizeRoles } = require("../middleware/roleMiddleware");
 const {
   applyJob,
   getMyApplications,
-  getApplicationsForJob
+  getApplicationsForJob,
+  updateApplicationStatus
 } = require("../controllers/applicationController");
 
 // Apply to job (candidate only)
@@ -30,6 +31,14 @@ router.get(
   protect,
   authorizeRoles("recruiter"),
   getApplicationsForJob
+);
+
+// Update application status (recruiter only)
+router.patch(
+  "/:id/status",
+  protect,
+  authorizeRoles("recruiter"),
+  updateApplicationStatus
 );
 
 module.exports = router;

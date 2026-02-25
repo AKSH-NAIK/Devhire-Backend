@@ -5,8 +5,7 @@ const Job = require("../models/Job");
 
 exports.applyJob = async (req, res) => {
     try {
-        const { jobId } = req.body;  
-        console.log("jobId:", jobId);
+        const { jobId, phone, coverLetter } = req.body;
 
         if (!jobId) {
             return res.status(400).json({
@@ -28,6 +27,7 @@ exports.applyJob = async (req, res) => {
             });
         }
 
+        // Prevent duplicate applications
         const existingApplication = await Application.findOne({
             job: jobId,
             user: req.user._id
@@ -39,15 +39,23 @@ exports.applyJob = async (req, res) => {
             });
         }
 
-       
+        // Resume is required
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Resume is required"
+            });
+        }
+
         const application = await Application.create({
             job: jobId,
             user: req.user._id,
-            resume: req.file ? req.file.path : null
+            phone,
+            coverLetter,
+            resume: req.file.path
         });
 
         return res.status(201).json({
-            message: "Applied successfully",
+            message: "Application submitted successfully",
             application
         });
 
@@ -59,7 +67,6 @@ exports.applyJob = async (req, res) => {
         });
     }
 };
-
 // Get applications for a specific job (Recruiter only)
 exports.getApplicationsForJob = async (req, res) => {
     try {
@@ -110,5 +117,34 @@ exports.getMyApplications = async (req, res) => {
             message: "Server error",
             error: error.message
         });
+    }
+};
+
+// Update application status (Recruiter only)
+exports.updateApplicationStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!['pending', 'shortlisted', 'rejected', 'reviewed'].includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
+        }
+
+        const application = await Application.findById(id).populate('job');
+        if (!application) {
+            return res.status(404).json({ message: "Application not found" });
+        }
+
+        // Only job owner can change status
+        if (application.job.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
+        application.status = status;
+        await application.save();
+
+        res.json({ message: "Status updated successfully", application });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };

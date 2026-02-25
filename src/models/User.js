@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
       enum: ["candidate", "recruiter"],
       required: true
     },
+    companyName: {
+      type: String,
+      default: ""
+    },
     companyWebsite: {
       type: String,
       default: ""
@@ -29,8 +33,8 @@ const userSchema = new mongoose.Schema(
       default: []
     },
     resume: {
-  type: String,
-   },
+      type: String,
+    },
 
   },
   { timestamps: true }
