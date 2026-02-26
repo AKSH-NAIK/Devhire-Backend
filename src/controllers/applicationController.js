@@ -46,14 +46,13 @@ exports.applyJob = async (req, res) => {
             });
         }
 
-        const application = await Application.create({
-            job: jobId,
-            user: req.user._id,
-            phone,
-            coverLetter,
-            resume: req.file.path
-        });
-
+       const application = await Application.create({
+        job: jobId,
+        user: req.user._id,
+        phone,
+        coverLetter,
+        resume: req.file ? req.file.path : null
+    });
         return res.status(201).json({
             message: "Application submitted successfully",
             application

@@ -15,7 +15,10 @@ const applicationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    coverLetter: String,
+    coverLetter: {
+         type: String,
+         required: true
+    },
     resume: {
         type: String,
         required: true
