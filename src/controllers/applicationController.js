@@ -96,10 +96,8 @@ exports.getApplicationsForJob = async (req, res) => {
   }
 };
 
-
-// =============================
 // Candidate: Get My Applications
-// =============================
+
 exports.getMyApplications = async (req, res) => {
   try {
 
@@ -126,9 +124,7 @@ exports.getMyApplications = async (req, res) => {
 };
 
 
-// =============================
-// Recruiter: Update Status
-// =============================
+//Recruiter: Update Application Status
 exports.updateApplicationStatus = async (req, res) => {
   try {
     const { id } = req.params;
