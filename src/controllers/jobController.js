@@ -4,7 +4,7 @@ const Job = require('../models/Job');
 
 exports.createJob = async (req, res) => {
     try {
-        const { title, description, location, salary, type, requirements } = req.body;
+        const { title, description, location, salary, type, requirements, company } = req.body;
 
         const job = await Job.create({
             title,
@@ -13,7 +13,7 @@ exports.createJob = async (req, res) => {
             salary,
             type,
             requirements,
-            company: req.user.companyName || req.user.name,
+            company: company || req.user.companyName || req.user.name,
             createdBy: req.user._id
         });
 

@@ -20,6 +20,12 @@ const JobSchema = new mongoose.Schema({
     type: String
   },
 
+  salaryPeriod: {
+    type: String,
+    enum: ['Monthly', 'Yearly'],
+    default: 'Monthly'
+  },
+
   type: {
     type: String,
     enum: ["Full-time", "Part-time", "Contract", "Internship"],
