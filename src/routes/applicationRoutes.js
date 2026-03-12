@@ -13,15 +13,18 @@ const {
   updateApplicationStatus
 } = require("../controllers/applicationController");
 
-// Apply to job (candidate only)
+
 router.post(
-  "/",
+  "/apply",
   protect,
   authorizeRoles("candidate"),
   upload.single("resume"),
+  (req, res, next) => {
+    console.log("Apply route hit");
+    next();
+  },
   applyJob
 );
-
 // Get my applications
 router.get("/my", protect, authorizeRoles("candidate"), getMyApplications);
 
