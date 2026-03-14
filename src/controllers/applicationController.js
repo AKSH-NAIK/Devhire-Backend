@@ -7,13 +7,14 @@ const Job = require("../models/Job");
 // =============================
 exports.applyJob = async (req, res) => {
   try {
-    
+
     console.log("===== APPLY JOB CONTROLLER HIT =====");
     console.log("Body:", req.body);
     console.log("File:", req.file);
+
     const { jobId, phone, coverLetter } = req.body;
 
-    // Check jobId
+    // Validate Job ID
     if (!jobId) {
       return res.status(400).json({ message: "Job ID is required" });
     }
@@ -22,13 +23,14 @@ exports.applyJob = async (req, res) => {
       return res.status(400).json({ message: "Invalid job ID" });
     }
 
-    // Check job exists
+    // Check if job exists
     const job = await Job.findById(jobId);
+
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    // Prevent duplicate application
+    // Prevent duplicate applications
     const existingApplication = await Application.findOne({
       job: jobId,
       user: req.user._id
@@ -48,8 +50,11 @@ exports.applyJob = async (req, res) => {
     }
 
     // Cloudinary resume URL
-    const resumeUrl = req.file ? req.file.path : null;
+    const resumeUrl = req.file.path;
 
+    console.log("Resume uploaded to Cloudinary:", resumeUrl);
+
+    // Create application
     const application = await Application.create({
       job: jobId,
       user: req.user._id,
@@ -60,21 +65,25 @@ exports.applyJob = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message: "Application submitted successfully",
       application
     });
 
   } catch (error) {
 
-    console.error("ERROR:", error);
+    console.error("APPLICATION ERROR:", error);
 
     return res.status(500).json({
-      message: "Server error",
+      success: false,
+      message: "Server error while applying",
       error: error.message
     });
 
   }
 };
+
+
 
 // =============================
 // Recruiter: Get Applications For A Job
@@ -94,7 +103,7 @@ exports.getApplicationsForJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    // Check recruiter owns the job
+    // Check recruiter owns job
     if (job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         message: "Not authorized"
@@ -105,11 +114,14 @@ exports.getApplicationsForJob = async (req, res) => {
       .populate("user", "name email");
 
     res.json({
+      success: true,
       total: applications.length,
       applications
     });
 
   } catch (error) {
+
+    console.error("GET APPLICATIONS ERROR:", error);
 
     res.status(500).json({
       message: "Server error",
@@ -118,6 +130,8 @@ exports.getApplicationsForJob = async (req, res) => {
 
   }
 };
+
+
 
 // =============================
 // Candidate: Get My Applications
@@ -139,11 +153,14 @@ exports.getMyApplications = async (req, res) => {
     const validApplications = applications.filter(app => app.job !== null);
 
     res.json({
+      success: true,
       total: validApplications.length,
       applications: validApplications
     });
 
   } catch (error) {
+
+    console.error("MY APPLICATIONS ERROR:", error);
 
     res.status(500).json({
       message: "Server error",
@@ -152,6 +169,8 @@ exports.getMyApplications = async (req, res) => {
 
   }
 };
+
+
 
 // =============================
 // Recruiter: Update Application Status
@@ -190,11 +209,14 @@ exports.updateApplicationStatus = async (req, res) => {
     await application.save();
 
     res.json({
+      success: true,
       message: "Status updated successfully",
       application
     });
 
   } catch (error) {
+
+    console.error("STATUS UPDATE ERROR:", error);
 
     res.status(500).json({
       message: "Server error",
@@ -202,4 +224,4 @@ exports.updateApplicationStatus = async (req, res) => {
     });
 
   }
-};
+};  

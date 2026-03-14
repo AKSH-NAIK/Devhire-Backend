@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../middleware/upload");
-
 const protect = require("../middleware/auth");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 
@@ -13,7 +12,9 @@ const {
   updateApplicationStatus
 } = require("../controllers/applicationController");
 
-
+// =============================
+// Candidate: Apply to a job
+// =============================
 router.post(
   "/apply",
   protect,
@@ -21,14 +22,26 @@ router.post(
   upload.single("resume"),
   (req, res, next) => {
     console.log("Apply route hit");
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
     next();
   },
   applyJob
 );
-// Get my applications
-router.get("/my", protect, authorizeRoles("candidate"), getMyApplications);
 
-// Get applications for a specific job (recruiter only)
+// =============================
+// Candidate: Get my applications
+// =============================
+router.get(
+  "/my",
+  protect,
+  authorizeRoles("candidate"),
+  getMyApplications
+);
+
+// =============================
+// Recruiter: Get applications for a job
+// =============================
 router.get(
   "/job/:jobId",
   protect,
@@ -36,7 +49,9 @@ router.get(
   getApplicationsForJob
 );
 
-// Update application status (recruiter only)
+// =============================
+// Recruiter: Update application status
+// =============================
 router.patch(
   "/:id/status",
   protect,
