@@ -5,13 +5,11 @@ const cloudinary = require("../config/cloudinary");
 // Cloudinary storage configuration
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: "devhire_resumes",
-      resource_type: "raw",
-      public_id: `${Date.now()}-${file.originalname}`
-    };
-  }
+  params: async (req, file) => ({
+    folder: "devhire_resumes",
+    resource_type: "auto", 
+    public_id: `${Date.now()}-${file.originalname}`
+  })
 });
 
 // Allow only resume file types
