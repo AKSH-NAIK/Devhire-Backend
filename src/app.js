@@ -7,17 +7,17 @@ const applicationRoutes = require("./routes/applicationRoutes");
 
 const app = express();
 
+
+
 // ─────────────────────────────────────────────
 // Middlewares
 // ─────────────────────────────────────────────
 
 // CORS
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "https://devhire-web.vercel.app",
+  credentials: true
+}));
 
 // Body parser
 app.use(express.json());
