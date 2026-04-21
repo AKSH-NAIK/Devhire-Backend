@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require("crypto");
 
 // ---- TEST CONTROLLER ----
 exports.testUser = (req, res) => {
@@ -34,7 +35,10 @@ exports.registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 4. Create user
+        // 4. Generate verification token
+        const token = crypto.randomBytes(32).toString("hex");
+
+        // 5. Create user
         const user = await User.create({
             name,
             email,
@@ -42,10 +46,11 @@ exports.registerUser = async (req, res) => {
             role,
             companyName: role === "recruiter" ? companyName : "",
             companyWebsite: role === "recruiter" ? companyWebsite : "",
-            areaOfInterest: role === "candidate" ? areaOfInterest : []
+            areaOfInterest: role === "candidate" ? areaOfInterest : [],
+            verificationToken: token
         });
 
-        // 5. Response
+        // 6. Response
         res.status(201).json({
             message: "User registered successfully",
             user: {

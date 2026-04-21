@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema(
     resume: {
       type: String,
     },
+    isVerified: {
+  type: Boolean,
+  default: false
+},
+verificationToken: {
+  type: String,
+  default: null
+}
 
   },
   { timestamps: true }
