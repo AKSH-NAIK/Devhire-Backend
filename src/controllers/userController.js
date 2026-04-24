@@ -2,7 +2,16 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS
+  }
+});
 // ---- TEST CONTROLLER ----
 exports.testUser = (req, res) => {
     res.json({
@@ -49,6 +58,18 @@ exports.registerUser = async (req, res) => {
             areaOfInterest: role === "candidate" ? areaOfInterest : [],
             verificationToken: token
         });
+        const verificationLink = `http://localhost:3000/verify/${token}`;
+
+    await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Verify your email",
+    html: `
+    <h3>Email Verification</h3>
+    <p>Click the link below to verify your account:</p>
+    <a href="${verificationLink}">Verify Email</a>
+  `
+    });
 
         // 6. Response
         res.status(201).json({
