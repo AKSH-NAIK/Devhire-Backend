@@ -183,3 +183,35 @@ exports.uploadResume = async (req, res) => {
         });
     }
 };
+// ---- VERIFY EMAIL ----
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // 1. Find user by token
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired token"
+      });
+    }
+
+    // 2. Update user
+    user.isVerified = true;
+    user.verificationToken = null;
+
+    await user.save();
+
+    // 3. Response
+    res.json({
+      message: "Email verified successfully"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+};

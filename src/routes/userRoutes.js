@@ -4,7 +4,7 @@ const auth = require("../middleware/auth");
 const { authorizeRoles } = require("../middleware/roleMiddleware"); 
 const upload = require("../config/multer");
 const { uploadResume } = require("../controllers/userController");
-
+const { verifyEmail } = require("../controllers/userController");
 const {
     testUser,
     registerUser,
@@ -28,6 +28,9 @@ router.get('/login', (req, res) => {
         hint: "Are you trying to access this via a browser? Login requires a POST request from a client like Postman or a frontend application."
     });
 });
+// Verifying email token 
+router.get("/verify/:token", verifyEmail);
+
 
 // Upload Resume
 router.put(
