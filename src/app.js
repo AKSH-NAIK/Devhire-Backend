@@ -15,7 +15,9 @@ const app = express();
 
 // CORS
 app.use(cors({
-  origin: "https://devhireweb.vercel.app",
+  origin:[ 
+    "https://devhireweb.vercel.app",
+  ],
   credentials: true
 }));
 
