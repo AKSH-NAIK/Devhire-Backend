@@ -63,7 +63,7 @@ exports.registerUser = async (req, res) => {
             areaOfInterest: role === "candidate" ? areaOfInterest : [],
             verificationToken: token
         });
-        const verificationLink = `${process.env.CLIENT_URL}/verify/${token}`;
+        const verificationLink = `https://devhire-backend-1.onrender.com/api/users/verify/${token}`;
 
         try {
             await transporter.sendMail({
@@ -78,7 +78,7 @@ exports.registerUser = async (req, res) => {
             });
         } catch (mailError) {
             console.error("Error sending verification email:", mailError);
-            // We don't return 500 here so the user is still registered
+           
         }
 
         // 6. Response
@@ -224,9 +224,7 @@ exports.verifyEmail = async (req, res) => {
     await user.save();
 
     // 3. Response
-    res.json({
-      message: "Email verified successfully"
-    });
+    res.redirect("https://devhireweb.vercel.app/login?verified=true");
 
   } catch (error) {
     res.status(500).json({
