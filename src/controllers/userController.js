@@ -22,14 +22,19 @@ exports.testUser = (req, res) => {
 // ---- REGISTER USER ----
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, companyName, companyWebsite, areaOfInterest } = req.body;
+        console.log("===== REGISTER REQUEST BODY =====");
+        console.log(req.body);
+
+        let { name, email, password, role, companyName, companyWebsite, areaOfInterest } = req.body;
 
         // 1. Validation
-        if (!name || !email || !password || !role) {
-            return res.status(400).json({
-                message: "Name, email, password, and role are required"
-            });
-        }
+        if (!name) return res.status(400).json({ message: "Name is required" });
+        if (!email) return res.status(400).json({ message: "Email is required" });
+        if (!password) return res.status(400).json({ message: "Password is required" });
+        if (!role) return res.status(400).json({ message: "Role is required" });
+
+        // Normalize email
+        email = email.toLowerCase().trim();
 
         // 2. Check existing user
         const existingUser = await User.findOne({ email });
@@ -101,14 +106,17 @@ exports.registerUser = async (req, res) => {
 // ---- LOGIN USER ----
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        console.log("===== LOGIN REQUEST BODY =====");
+        console.log(req.body);
+
+        let { email, password } = req.body;
 
         // 1. Validation
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "All fields required"
-            });
-        }
+        if (!email) return res.status(400).json({ message: "Email is required" });
+        if (!password) return res.status(400).json({ message: "Password is required" });
+
+        // Normalize email
+        email = email.toLowerCase().trim();
 
         // 2. Check user exists
         const user = await User.findOne({ email });
