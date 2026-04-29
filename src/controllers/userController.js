@@ -6,13 +6,13 @@ const nodemailer = require("nodemailer");
 
 // ================= MAIL CONFIG =================
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp-relay.brevo.com",
+  port: 587,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS
   }
 });
-
 // ================= TEST =================
 exports.testUser = (req, res) => {
   res.json({ message: "User controller is working" });
@@ -54,7 +54,7 @@ exports.registerUser = async (req, res) => {
 
     try {
       await transporter.sendMail({
-        from: `"DevHire" <${process.env.EMAIL_USER}>`,
+        from: `"DevHire" <${process.env.BREVO_USER}>`,
         to: user.email,
         subject: "Verify your email",
         html: `
