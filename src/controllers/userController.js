@@ -2,17 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
-// ================= MAIL CONFIG =================
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS
-  }
-});
 // ================= TEST =================
 exports.testUser = (req, res) => {
   res.json({ message: "User controller is working" });
@@ -23,21 +14,26 @@ exports.registerUser = async (req, res) => {
   try {
     let { name, email, password, role, companyName, companyWebsite, areaOfInterest } = req.body;
 
+    // Validation
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "All required fields missing" });
     }
 
     email = email.toLowerCase().trim();
 
+    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate verification token
     const token = crypto.randomBytes(32).toString("hex");
 
+    // Create user
     const user = await User.create({
       name,
       email,
@@ -50,22 +46,40 @@ exports.registerUser = async (req, res) => {
       isVerified: false
     });
 
+    // Verification link
     const verificationLink = `https://devhire-backend-1.onrender.com/api/users/verify/${token}`;
 
+    // ================= EMAIL VIA BREVO API =================
     try {
-      await transporter.sendMail({
-        from: `"DevHire" <${process.env.BREVO_USER}>`,
-        to: user.email,
-        subject: "Verify your email",
-        html: `
-          <h2>Email Verification</h2>
-          <p>Click below to verify:</p>
-          <a href="${verificationLink}">Verify Email</a>
-        `
-      });
-      console.log("Email sent:", user.email);
+      await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: {
+            name: "DevHire",
+            email: process.env.BREVO_USER
+          },
+          to: [
+            { email: user.email }
+          ],
+          subject: "Verify your email",
+          htmlContent: `
+            <h2>Email Verification</h2>
+            <p>Click below to verify your account:</p>
+            <a href="${verificationLink}">Verify Email</a>
+          `
+        },
+        {
+          headers: {
+            "api-key": process.env.BREVO_PASS,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      console.log("EMAIL SENT SUCCESS");
+
     } catch (err) {
-      console.log("Email error:", err);
+      console.log("EMAIL ERROR:", err.response?.data || err.message);
     }
 
     res.status(201).json({
@@ -73,7 +87,7 @@ exports.registerUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("REGISTER ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -97,6 +111,7 @@ exports.loginUser = async (req, res) => {
 
     if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
+    // Block unverified users
     if (!user.isVerified) {
       return res.status(401).json({
         message: "Please verify your email before logging in"
@@ -115,12 +130,12 @@ exports.loginUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// ================= VERIFY =================
+// ================= VERIFY EMAIL =================
 exports.verifyEmail = async (req, res) => {
   try {
     const { token } = req.params;
@@ -139,7 +154,7 @@ exports.verifyEmail = async (req, res) => {
     res.redirect("https://devhireweb.vercel.app/login?verified=true");
 
   } catch (error) {
-    console.error(error);
+    console.error("VERIFY ERROR:", error);
     res.status(500).send("Verification failed");
   }
 };
@@ -149,7 +164,7 @@ exports.getMyProfile = async (req, res) => {
   res.json({ user: req.user });
 };
 
-// ================= OPTIONAL (SAFE) =================
+// ================= OPTIONAL =================
 exports.uploadResume = async (req, res) => {
   res.json({ message: "Resume upload working" });
 };
