@@ -7,17 +7,17 @@ const Job = require("../models/Job");
 // =============================
 exports.applyJob = async (req, res) => {
   try {
-
-    console.log("===== APPLY JOB CONTROLLER HIT =====");
-    console.log("Body:", req.body);
-    console.log("File:", req.file);
+    console.log("===== APPLY JOB REQUEST BODY =====");
+    console.log(req.body);
+    console.log("===== APPLY JOB FILE =====");
+    console.log(req.file);
 
     const { jobId, phone, coverLetter } = req.body;
 
-    // Validate Job ID
-    if (!jobId) {
-      return res.status(400).json({ message: "Job ID is required" });
-    }
+    // 1. Validation
+    if (!jobId) return res.status(400).json({ message: "Job ID is required" });
+    if (!phone) return res.status(400).json({ message: "Phone number is required" });
+    if (!coverLetter) return res.status(400).json({ message: "Cover letter is required" });
 
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
       return res.status(400).json({ message: "Invalid job ID" });

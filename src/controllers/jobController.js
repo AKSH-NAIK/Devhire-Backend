@@ -5,16 +5,25 @@ const Job = require("../models/Job");
 // ================= CREATE JOB =================
 exports.createJob = async (req, res) => {
   try {
+    console.log("===== CREATE JOB REQUEST BODY =====");
+    console.log(req.body);
 
-    const { title, description, location, salary, type, requirements, company } = req.body;
+    const { title, description, location, salary, salaryPeriod, type, requirements, company } = req.body;
+
+    // 1. Validation
+    if (!title) return res.status(400).json({ message: "Job title is required" });
+    if (!description) return res.status(400).json({ message: "Description is required" });
+    if (!location) return res.status(400).json({ message: "Location is required" });
+    if (!salary) return res.status(400).json({ message: "Salary is required" });
 
     const job = await Job.create({
       title,
       description,
       location,
       salary,
-      type,
-      requirements,
+      salaryPeriod: salaryPeriod || "Monthly",
+      type: type || "Full-time",
+      requirements: Array.isArray(requirements) ? requirements : [],
       company: company || req.user.companyName || req.user.name,
       createdBy: req.user._id
     });

@@ -1,38 +1,37 @@
 const express = require("express");
 const router = express.Router();
+
 const auth = require("../middleware/auth");
-const { authorizeRoles } = require("../middleware/roleMiddleware"); 
+const { authorizeRoles } = require("../middleware/roleMiddleware");
 const upload = require("../config/multer");
-const { uploadResume } = require("../controllers/userController");
-const { verifyEmail } = require("../controllers/userController");
+
 const {
-    testUser,
-    registerUser,
-    loginUser,
-    getMyProfile,
+  testUser,
+  registerUser,
+  loginUser,
+  getMyProfile,
+  verifyEmail,
+  uploadResume
 } = require('../controllers/userController');
 
-// Test Route
+// Test
 router.get('/test', testUser);
 
-// Register User
+// Auth
 router.post('/register', registerUser);
-
-// Login User
 router.post('/login', loginUser);
 
-// Helpful feedback for login
+// Helpful GET login
 router.get('/login', (req, res) => {
-    res.status(405).json({
-        message: "To login, please send a POST request with email and password.",
-        hint: "Are you trying to access this via a browser? Login requires a POST request from a client like Postman or a frontend application."
-    });
+  res.status(405).json({
+    message: "Use POST for login"
+  });
 });
-// Verifying email token  
-router.get("/verify/:token", verifyEmail);
 
+// Verify email
+router.get('/verify/:token', verifyEmail);
 
-// Upload Resume
+// Resume upload (now SAFE)
 router.put(
   "/upload-resume",
   auth,
@@ -41,7 +40,7 @@ router.put(
   uploadResume
 );
 
-// Get My Profile
+// Profile
 router.get('/me', auth, getMyProfile);
 
 module.exports = router;
