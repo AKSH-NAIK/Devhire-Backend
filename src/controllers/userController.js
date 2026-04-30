@@ -4,10 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require("crypto");
 const axios = require("axios");
 
-// ================= TEST =================
-exports.testUser = (req, res) => {
-  res.json({ message: "User controller is working" });
-};
+
 
 // ================= REGISTER =================
 exports.registerUser = async (req, res) => {
