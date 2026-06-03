@@ -31,7 +31,7 @@ router.get('/login', (req, res) => {
 // Verify email
 router.get('/verify/:token', verifyEmail);
 
-// Resume upload (now SAFE)
+// Resume upload 
 router.put(
   "/upload-resume",
   auth,

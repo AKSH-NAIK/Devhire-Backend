@@ -2,9 +2,6 @@ const mongoose = require("mongoose");
 const Application = require("../models/Application");
 const Job = require("../models/Job");
 
-// =============================
-// Apply to Job
-// =============================
 exports.applyJob = async (req, res) => {
   try {
     console.log("===== APPLY JOB REQUEST BODY =====");
@@ -85,9 +82,7 @@ exports.applyJob = async (req, res) => {
 
 
 
-// =============================
-// Recruiter: Get Applications For A Job
-// =============================
+
 exports.getApplicationsForJob = async (req, res) => {
   try {
 
@@ -133,9 +128,7 @@ exports.getApplicationsForJob = async (req, res) => {
 
 
 
-// =============================
-// Candidate: Get My Applications
-// =============================
+
 exports.getMyApplications = async (req, res) => {
   try {
 
@@ -172,9 +165,7 @@ exports.getMyApplications = async (req, res) => {
 
 
 
-// =============================
-// Recruiter: Update Application Status
-// =============================
+
 exports.updateApplicationStatus = async (req, res) => {
   try {
 

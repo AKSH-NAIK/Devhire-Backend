@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Job = require("../models/Job");
 
 
-// ================= CREATE JOB =================
+// CREATE JOB
 exports.createJob = async (req, res) => {
   try {
     console.log("===== CREATE JOB REQUEST BODY =====");
@@ -44,7 +44,7 @@ exports.createJob = async (req, res) => {
 };
 
 
-// ================= GET ALL JOBS =================
+// GET ALL JOBS
 exports.getJobs = async (req, res) => {
   try {
 
@@ -88,7 +88,7 @@ exports.getJobs = async (req, res) => {
 };
 
 
-// ================= RECRUITER JOBS =================
+// RECRUITER JOBS
 exports.getRecruiterJobs = async (req, res) => {
   try {
 
@@ -112,7 +112,7 @@ exports.getRecruiterJobs = async (req, res) => {
 };
 
 
-// ================= GET SINGLE JOB =================
+// GET JOB BY ID
 exports.getJobById = async (req, res) => {
   try {
 
@@ -143,7 +143,7 @@ exports.getJobById = async (req, res) => {
 };
 
 
-// ================= UPDATE JOB =================
+// UPDATE JOB
 exports.updateJob = async (req, res) => {
   try {
 
@@ -177,8 +177,8 @@ exports.updateJob = async (req, res) => {
   }
 };
 
+// DELETE JOB
 
-// ================= DELETE JOB =================
 exports.deleteJob = async (req, res) => {
   try {
 

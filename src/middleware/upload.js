@@ -12,7 +12,6 @@ const storage = new CloudinaryStorage({
   })
 });
 
-// Allow only resume file types
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "application/pdf",

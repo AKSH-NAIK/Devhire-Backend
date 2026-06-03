@@ -12,9 +12,9 @@ const {
   updateApplicationStatus
 } = require("../controllers/applicationController");
 
-// =============================
+
 // Candidate: Apply to a job
-// =============================
+
 router.post(
   "/apply",
   protect,
@@ -29,9 +29,9 @@ router.post(
   applyJob
 );
 
-// =============================
+
 // Candidate: Get my applications
-// =============================
+
 router.get(
   "/my",
   protect,
@@ -39,9 +39,9 @@ router.get(
   getMyApplications
 );
 
-// =============================
+
 // Recruiter: Get applications for a job
-// =============================
+
 router.get(
   "/job/:jobId",
   protect,
@@ -49,9 +49,8 @@ router.get(
   getApplicationsForJob
 );
 
-// =============================
 // Recruiter: Update application status
-// =============================
+
 router.patch(
   "/:id/status",
   protect,

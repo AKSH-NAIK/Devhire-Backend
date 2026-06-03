@@ -9,9 +9,6 @@ const app = express();
 
 
 
-// ─────────────────────────────────────────────
-// Middlewares
-// ─────────────────────────────────────────────
 
 // CORS
 app.use(cors({
@@ -29,9 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 
-// ─────────────────────────────────────────────
-// Routes
-// ─────────────────────────────────────────────
+
 
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -43,9 +38,7 @@ app.get("/", (req, res) => {
 });
 
 
-// ─────────────────────────────────────────────
-// Global Error Handler
-// ─────────────────────────────────────────────
+
 
 app.use((err, req, res, next) => {
   console.error("GLOBAL ERROR:", err);
