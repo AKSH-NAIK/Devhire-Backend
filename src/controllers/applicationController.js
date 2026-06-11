@@ -99,7 +99,7 @@ exports.getApplicationsForJob = async (req, res) => {
     }
 
     // Check recruiter owns job
-    if (job.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "admin" && job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         message: "Not authorized"
       });
@@ -132,9 +132,11 @@ exports.getApplicationsForJob = async (req, res) => {
 exports.getMyApplications = async (req, res) => {
   try {
 
-    const applications = await Application.find({
-      user: req.user._id
-    }).populate({
+    const query = req.user.role === "admin"
+      ? {}
+      : { user: req.user._id };
+
+    const applications = await Application.find(query).populate({
       path: "job",
       populate: {
         path: "createdBy",
@@ -189,7 +191,7 @@ exports.updateApplicationStatus = async (req, res) => {
     }
 
     // Check recruiter owns job
-    if (application.job.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "admin" && application.job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         message: "Not authorized"
       });

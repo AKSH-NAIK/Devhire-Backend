@@ -5,7 +5,7 @@ DevHire is a Node.js-based job application platform that allows users to browse 
 ## Features
 
 - User registration and authentication (JWT-based)
-- Role-based access control (admin, employer, applicant)
+- Role-based access control (admin, recruiter, candidate)
 - Job posting creation, update, and deletion
 - Application submission with resume upload
 - Cloudinary integration for file storage
@@ -24,6 +24,7 @@ src/
     db.js               # MongoDB connection setup
     multer.js           # Multer configuration for file uploads
   controllers/
+    adminController.js   # Admin management logic
     applicationController.js # Application logic
     jobController.js         # Job management logic
     userController.js        # User management logic
@@ -37,6 +38,7 @@ src/
     User.js             # User schema/model
   routes/
     applicationRoutes.js # Application-related routes
+    adminRoutes.js       # Admin-related routes
     jobRoutes.js         # Job-related routes
     userRoutes.js        # User-related routes
   utils/                # Utility functions
@@ -68,10 +70,13 @@ package.json            # Project metadata and dependencies
      PORT=5000
      MONGODB_URI=<your-mongodb-uri>
      JWT_SECRET=<your-jwt-secret>
+     ADMIN_REGISTRATION_KEY=<optional-admin-bootstrap-key>
      CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
      CLOUDINARY_API_KEY=<your-cloudinary-api-key>
      CLOUDINARY_API_SECRET=<your-cloudinary-api-secret>
      ```
+
+   - To create the first admin through the API, send `adminKey` with the matching `ADMIN_REGISTRATION_KEY` value when registering a user with the `admin` role.
 
 ### Running the Application
 ```bash
@@ -84,18 +89,29 @@ The server will start on the port specified in your `.env` file (default: 5000).
 ### User Routes
 - `POST /api/users/register` — Register a new user
 - `POST /api/users/login` — User login
-- `GET /api/users/profile` — Get user profile (auth required)
+- `GET /api/users/me` — Get user profile (auth required)
+
+### Admin Routes
+- `GET /api/admin/summary` — Get dashboard counts
+- `GET /api/admin/users` — List all users
+- `PATCH /api/admin/users/:id/role` — Update a user's role
+- `DELETE /api/admin/users/:id` — Delete a user
+- `GET /api/admin/jobs` — List all jobs
+- `DELETE /api/admin/jobs/:id` — Delete any job
+- `GET /api/admin/applications` — List all applications
+- `PATCH /api/admin/applications/:id/status` — Update any application status
 
 ### Job Routes
 - `GET /api/jobs` — List all jobs
-- `POST /api/jobs` — Create a new job (employer/admin only)
-- `PUT /api/jobs/:id` — Update a job (employer/admin only)
-- `DELETE /api/jobs/:id` — Delete a job (employer/admin only)
+- `POST /api/jobs` — Create a new job (recruiter/admin only)
+- `PUT /api/jobs/:id` — Update a job (recruiter/admin only)
+- `DELETE /api/jobs/:id` — Delete a job (recruiter/admin only)
 
 ### Application Routes
-- `POST /api/applications` — Apply for a job (resume upload supported)
-- `GET /api/applications` — List all applications (admin/employer only)
-- `GET /api/applications/:id` — Get application details
+- `POST /api/applications/apply` — Apply for a job (resume upload supported)
+- `GET /api/applications/my` — List my applications
+- `GET /api/applications/job/:jobId` — List applications for a job
+- `PATCH /api/applications/:id/status` — Update application status
 
 ## Technologies Used
 - Node.js

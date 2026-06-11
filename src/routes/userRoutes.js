@@ -6,7 +6,6 @@ const { authorizeRoles } = require("../middleware/roleMiddleware");
 const upload = require("../config/multer");
 
 const {
-  testUser,
   registerUser,
   loginUser,
   getMyProfile,
@@ -14,8 +13,8 @@ const {
   uploadResume
 } = require('../controllers/userController');
 
-// Test
-router.get('/test', testUser);
+
+
 
 // Auth
 router.post('/register', registerUser);

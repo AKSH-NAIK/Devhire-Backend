@@ -10,10 +10,20 @@ const axios = require("axios");
 exports.registerUser = async (req, res) => {
   try {
     let { name, email, password, role, companyName, companyWebsite, areaOfInterest } = req.body;
+    const adminRegistrationKey = process.env.ADMIN_REGISTRATION_KEY;
+    const allowedRoles = ["candidate", "recruiter"];
 
     // Validation
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "All required fields missing" });
+    }
+
+    if (role === "admin") {
+      if (!adminRegistrationKey || req.body.adminKey !== adminRegistrationKey) {
+        return res.status(403).json({ message: "Admin registration is not allowed" });
+      }
+    } else if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
     }
 
     email = email.toLowerCase().trim();

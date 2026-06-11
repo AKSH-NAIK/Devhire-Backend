@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Job = require("../models/Job");
+const Application = require("../models/Application");
 
 
 // CREATE JOB
@@ -91,10 +92,11 @@ exports.getJobs = async (req, res) => {
 // RECRUITER JOBS
 exports.getRecruiterJobs = async (req, res) => {
   try {
+    const query = req.user.role === "admin"
+      ? {}
+      : { createdBy: req.user._id };
 
-    const jobs = await Job.find({
-      createdBy: req.user._id
-    }).sort({ createdAt: -1 });
+    const jobs = await Job.find(query).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -153,7 +155,7 @@ exports.updateJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    if (job.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "admin" && job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -188,10 +190,11 @@ exports.deleteJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    if (job.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "admin" && job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
+    await Application.deleteMany({ job: job._id });
     await job.deleteOne();
 
     res.json({
